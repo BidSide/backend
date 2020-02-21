@@ -13,10 +13,16 @@ module.exports = {
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'development',
+        jwtSecret: 'supersecret',
+        mongodbUser: 'rendszerf',
+        mongodbPswd: 'cBiuMYANMuMgv8H9',
       },
       // eslint-disable-next-line @typescript-eslint/camelcase
       env_production: {
         NODE_ENV: 'production',
+        jwtSecret: 'supersecret',
+        mongodbUser: 'rendszerf',
+        mongodbPswd: 'cBiuMYANMuMgv8H9',
       },
     },
   ],
