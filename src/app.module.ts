@@ -7,7 +7,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(`mongodb+srv://${process.env.mongodbUser}:${process.env.mongodbPswd}@cluster0-klz9d.mongodb.net/rendszerf`),
+    MongooseModule.forRoot(`mongodb+srv://${process.env.mongodbUser}:${process.env.mongodbPswd}@cluster0-klz9d.mongodb.net/rendszerf`, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }),
     AuthModule,
     UsersModule
   ],
