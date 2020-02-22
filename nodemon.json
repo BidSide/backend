@@ -6,7 +6,7 @@
   "env": {
     "NODE_ENV": "development",
     "jwtSecret": "supersecret",
-    "mongodbUser": "development",
-    "mongodbPswd": "rucbar0129"
+    "mongodbUser": "rendszerf",
+    "mongodbPswd": "cBiuMYANMuMgv8H9"
   }
 }
