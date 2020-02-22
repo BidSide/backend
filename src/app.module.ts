@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { join } from "path";
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       useUnifiedTopology: true
     }),
     AuthModule,
-    UsersModule
+    UsersModule,
+    CategoriesModule
   ],
   controllers: [AppController],
   providers: [AppService],

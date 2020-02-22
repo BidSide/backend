@@ -42,6 +42,10 @@ export class AuthService {
     });
   }
 
+  async refreshToken(req){
+    return this.createJwtPayload(req.user);
+  }
+
   createJwtPayload(user) {
     const data: any = {
       sub: user.email,
