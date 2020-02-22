@@ -9,4 +9,8 @@ export class CategoriesService {
     @InjectModel('Category') private readonly categoryModel: Model<CategoryInterface>
   ) {
   }
+
+  async getAll() {
+    return this.categoryModel.find();
+  }
 }
