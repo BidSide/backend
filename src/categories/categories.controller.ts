@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Logger, Req, UseGuards } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CategoryInterface } from './interfaces/category.interface';
@@ -16,7 +16,10 @@ export class CategoriesController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('USER')
   @Get()
-  async getCategories(): Promise<CategoryInterface[]> {
+  async getCategories(@Req() req): Promise<CategoryInterface[]> {
+
+    Logger.log(req.user);
+
     return await this.categoriesService.getAll();
   }
 

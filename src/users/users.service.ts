@@ -27,4 +27,12 @@ export class UsersService {
 
     return await new this.userModel(createUserDto).save();
   }
+
+  async validateUser(email: string){
+    return this.userModel.findOne({
+      email,
+    })
+      .select("-password -passwordAgain")
+      ;
+  }
 }
