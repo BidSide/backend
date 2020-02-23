@@ -14,5 +14,4 @@ import { AuthModule } from '../auth/auth.module';
   exports: [CategoriesService],
   controllers: [CategoriesController],
 })
-export class CategoriesModule {
-}
+export class CategoriesModule {}

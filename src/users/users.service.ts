@@ -7,8 +7,7 @@ import { UserInterface } from './interfaces/user.interface';
 export class UsersService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<UserInterface>,
-  ) {
-  }
+  ) {}
 
   async findOne(email): Promise<UserInterface | undefined> {
     return this.userModel.findOne({
@@ -28,11 +27,11 @@ export class UsersService {
     return await new this.userModel(createUserDto).save();
   }
 
-  async validateUser(email: string){
-    return this.userModel.findOne({
-      email,
-    })
-      .select("-password -passwordAgain")
-      ;
+  async validateUser(email: string) {
+    return this.userModel
+      .findOne({
+        email,
+      })
+      .select('-password -passwordAgain');
   }
 }

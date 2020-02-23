@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -6,17 +10,14 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
   ) {}
-
 
   async login(loginAttempt: any) {
     let userToAttempt;
 
     try {
-      userToAttempt = await this.usersService.findOne(
-        loginAttempt.email,
-      );
+      userToAttempt = await this.usersService.findOne(loginAttempt.email);
     } catch (e) {
       throw new ForbiddenException(e.message.message);
     }
@@ -42,7 +43,7 @@ export class AuthService {
     });
   }
 
-  async refreshToken(req){
+  async refreshToken(req) {
     return this.createJwtPayload(req.user);
   }
 

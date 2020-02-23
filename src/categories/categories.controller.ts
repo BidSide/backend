@@ -7,20 +7,14 @@ import { Roles } from '../common/decorators/roles.decorator';
 
 @Controller('categories')
 export class CategoriesController {
-
-  constructor(
-    private readonly categoriesService: CategoriesService,
-  ) {
-  }
+  constructor(private readonly categoriesService: CategoriesService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('USER')
   @Get()
   async getCategories(@Req() req): Promise<CategoryInterface[]> {
-
     Logger.log(req.user);
 
     return await this.categoriesService.getAll();
   }
-
 }

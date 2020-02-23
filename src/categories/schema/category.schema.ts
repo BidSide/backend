@@ -11,14 +11,16 @@ export const CategorySchema = new mongoose.Schema({
   },
   parentCategory: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
+    ref: 'Category',
     default: null,
-    required: false
+    required: false,
   },
-  childCategories: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
-    default: null,
-    required: false
-  }]
+  childCategories: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      default: null,
+      required: false,
+    },
+  ],
 });
