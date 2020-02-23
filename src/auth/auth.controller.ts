@@ -1,4 +1,11 @@
-import { Controller, Post, UseGuards, Request, Get, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Get,
+  Body,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -6,12 +13,10 @@ import { UserDto } from '../users/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
-
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-  ) {
-  }
+  ) {}
 
   @Post('signup')
   async createUserByEmailAndPassword(
@@ -22,10 +27,7 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(
-    @Request() req,
-    @Body() user: UserDto,
-  ) {
+  async login(@Request() req, @Body() user: UserDto) {
     return this.authService.login(user);
   }
 
@@ -40,5 +42,4 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user;
   }
-
 }

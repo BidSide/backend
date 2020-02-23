@@ -4,7 +4,7 @@ export class UserDto {
   @IsEmail(
     {},
     {
-      message: "Nem megfelelő email",
+      message: 'Nem megfelelő email',
       context: { status: 422 },
     },
   )
@@ -24,5 +24,4 @@ export class UserDto {
   @IsString()
   @IsOptional()
   readonly passwordAgain: string;
-
 }

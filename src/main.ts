@@ -19,9 +19,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    exposedHeaders: [
-      'X-Total-Count',
-    ],
+    exposedHeaders: ['X-Total-Count'],
   });
 
   await app.listen(3000);

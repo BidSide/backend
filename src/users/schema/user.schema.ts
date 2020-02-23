@@ -2,34 +2,37 @@ import * as mongoose from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
 import { UserInterface } from '../interfaces/user.interface';
 
-export const UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
+export const UserSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+    },
+    roles: {
+      type: [String],
+      default: ['USER'],
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    passwordAgain: {
+      type: String,
+      required: false,
+    },
   },
-  roles: {
-    type: [String],
-    default: ['USER'],
+  {
+    strict: false,
   },
-  password: {
-    type: String,
-    required: true,
-  },
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  passwordAgain: {
-    type: String,
-    required: false,
-  },
-}, {
-  strict: false,
-});
+);
 
 UserSchema.pre<UserInterface>('save', function(next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
