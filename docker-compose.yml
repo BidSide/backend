@@ -12,3 +12,10 @@ services:
       - ./mongodb/mongo-volume:/data/db
     ports:
       - '27017-27019:27017-27019'
+  backend:
+    image: drendragon/bidside-app
+    depends_on:
+      - database
+    container_name: 'bidside-backend'
+    ports:
+      - '3000:3000'
