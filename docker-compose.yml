@@ -13,7 +13,9 @@ services:
     ports:
       - '27017-27019:27017-27019'
   backend:
-    image: drendragon/bidside-app
+    build:
+      context: .
+    image: drendragon/bidside-app:latest
     depends_on:
       - database
     container_name: 'bidside-backend'
