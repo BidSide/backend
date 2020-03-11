@@ -1,0 +1,21 @@
+version: '3'
+services: 
+  database:
+    image: 'mongo'
+    container_name: 'bidside-mongodb'
+    environment:
+      - MONGO_INITDB_DATABASE=bidside
+      - MONGO_INITDB_ROOT_USERNAME=ROOT
+      - MONGO_INITDB_ROOT_PASSWORD=ROOT
+    volumes:
+      - ./mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongodb/mongo-volume:/data/db
+    ports:
+      - '27017-27019:27017-27019'
+  backend:
+    image: drendragon/bidside-app
+    depends_on:
+      - database
+    container_name: 'bidside-backend'
+    ports:
+      - '3000:3000'
