@@ -15,9 +15,11 @@ import { CategoriesModule } from './categories/categories.module';
     }),
     MongooseModule.forRoot(
       `mongodb+srv://${process.env.mongodbUser}:${process.env.mongodbPswd}@cluster0-klz9d.mongodb.net/rendszerf`,
+      //`mongodb+srv://${process.env.mongodbUser}:${process.env.mongodbPswd}@cluster0-klz9d.mongodb.net/rendszerf`,
+      //`mongodb://bidside:bidside@database:27017/bidside`,
       {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+        // useNewUrlParser: true,
+        // useUnifiedTopology: true,
       },
     ),
     AuthModule,
