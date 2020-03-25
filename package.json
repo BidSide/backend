@@ -43,8 +43,8 @@
     "rxjs": "6.5.4"
   },
   "devDependencies": {
+    "@nestjs/schematics": "7.0.0",
     "@nestjs/cli": "7.0.2",
-    "@nestjs/schematics": "6.9.4",
     "@types/jest": "25.1.4",
     "@types/node": "13.9.4",
     "@types/mongoose": "5.7.7",
