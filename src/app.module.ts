@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CategoriesModule } from './categories/categories.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -18,13 +19,14 @@ import { CategoriesModule } from './categories/categories.module';
       //`mongodb+srv://${process.env.mongodbUser}:${process.env.mongodbPswd}@cluster0-klz9d.mongodb.net/rendszerf`,
       //`mongodb://bidside:bidside@database:27017/bidside`,
       {
-        // useNewUrlParser: true,
-        // useUnifiedTopology: true,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
       },
     ),
     AuthModule,
     UsersModule,
     CategoriesModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
