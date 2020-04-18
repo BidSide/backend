@@ -5,8 +5,11 @@ export class ProductDto {
   @IsString()
   name: string;
 
+  @IsString()
+  description: string;
+
   @IsNumber()
-  buyout: number;
+  buyoutPrice: number;
 
   @IsNumber()
   starterPrice: number;
