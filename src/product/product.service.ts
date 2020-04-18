@@ -13,7 +13,8 @@ export class ProductService {
   }
 
   async getAllProduct() {
-    return this.productModel.find();
+    return this.productModel.find()
+      .populate('category');
   }
 
   async createProduct(req, productDto: ProductDto) {
@@ -24,7 +25,7 @@ export class ProductService {
   }
 
   async getProductById(_id: string) {
-    return this.productModel.findById(_id);
+    return this.productModel.findById(_id).populate('category');
   }
 
   async updateProduct(req, _id: string, productDto: ProductDto) {
