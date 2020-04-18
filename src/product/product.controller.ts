@@ -11,8 +11,6 @@ export class ProductController {
   constructor(private productService: ProductService) {
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('USER')
   @Get()
   async getAllProduct() {
     return await this.productService.getAllProduct();
@@ -25,8 +23,6 @@ export class ProductController {
     return await this.productService.createProduct(req, productDto);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('USER')
   @Get(':_id')
   async getProductById(@Param('_id') _id: string) {
     return await this.productService.getProductById(_id);
