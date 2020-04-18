@@ -3,6 +3,8 @@ orbs:
   node: circleci/node@1.1.6
 jobs:
   build:
+    only:
+      - master
     executor:
       name: node/default
     steps:
