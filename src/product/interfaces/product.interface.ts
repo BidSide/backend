@@ -4,9 +4,10 @@ import { CategoryInterface } from '../../categories/interfaces/category.interfac
 
 export interface ProductInterface extends Document {
   name: string,
-  buyout: number,
+  description: string,
+  buyoutPrice: number,
   starterPrice: number,
-  actualBid: number,
+  currentPrice: number,
   profile: UserInterface,
   category: CategoryInterface
 }

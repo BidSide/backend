@@ -2,9 +2,10 @@ import * as mongoose from 'mongoose';
 
 export const ProductSchema = new mongoose.Schema({
   name: String,
-  buyout: Number,
+  description: String,
+  buyoutPrice: Number,
   starterPrice: Number,
-  actualBid: {
+  currentPrice: {
     type: Number,
     default: 0,
   },
