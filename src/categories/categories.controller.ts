@@ -8,8 +8,6 @@ export class CategoriesController {
 
   @Get()
   async getCategories(@Req() req): Promise<CategoryInterface[]> {
-    Logger.log(req.user);
-
     return await this.categoriesService.getAll();
   }
 }
