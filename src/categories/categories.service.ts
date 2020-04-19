@@ -38,4 +38,7 @@ export class CategoriesService {
     return this.categoryModel.findByIdAndDelete(_id);
   }
 
+  async findByName(searchForCategory: string) {
+    return this.categoryModel.findOne({name: searchForCategory});
+  }
 }
