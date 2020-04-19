@@ -4,7 +4,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ProductInterface } from './interfaces/product.interface';
 import { CategoriesService } from '../categories/categories.service';
-import { options } from 'tsconfig-paths/lib/options';
 
 @Injectable()
 export class ProductService {
