@@ -12,8 +12,11 @@ export class ProductController {
   }
 
   @Get()
-  async getAllProduct(@Query('category') searchForCategory?: string) {
-    return await this.productService.getAllProduct(searchForCategory);
+  async getAllProduct(
+    @Query('category') searchForCategory?: string,
+    @Query('search') searchForyProduct?: string
+  ) {
+    return await this.productService.getAllProduct(searchForCategory, searchForyProduct);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

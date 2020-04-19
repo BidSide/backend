@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ProductInterface } from './interfaces/product.interface';
 import { CategoriesService } from '../categories/categories.service';
+import { options } from 'tsconfig-paths/lib/options';
 
 @Injectable()
 export class ProductService {
@@ -15,16 +16,20 @@ export class ProductService {
   ) {
   }
 
-  async getAllProduct(searchForCategory?:string) {
+  async getAllProduct(searchForCategory?:string, searchForProduct?: string) {
+
+    const query: any = {};
 
     if(searchForCategory){
       const categoryInDatabase = await this.categoryService.findByName(searchForCategory);
-      return this.productModel.find({
-        category: categoryInDatabase._id
-      }).populate('category');
+      query.category = categoryInDatabase._id;
+    }
+    if(searchForProduct){
+      const regex = new RegExp(searchForProduct);
+      query.name = {$regex: regex, $options: 'i'}
     }
 
-    return this.productModel.find()
+    return this.productModel.find(query)
       .populate('category');
   }
 
