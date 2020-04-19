@@ -4,28 +4,30 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ProductInterface } from './interfaces/product.interface';
 import { CategoriesService } from '../categories/categories.service';
+import { ProfileService } from '../profile/profile.service';
+import { ProfileInterface } from '../profile/interfaces/profile.interface';
 
 @Injectable()
 export class ProductService {
 
   constructor(
     @InjectModel('Product') private readonly productModel: Model<ProductInterface>,
-    private readonly categoryService: CategoriesService
-
+    private readonly categoryService: CategoriesService,
+    private readonly profileService: ProfileService
   ) {
   }
 
-  async getAllProduct(searchForCategory?:string, searchForProduct?: string) {
+  async getAllProduct(searchForCategory?: string, searchForProduct?: string) {
 
     const query: any = {};
 
-    if(searchForCategory){
+    if (searchForCategory) {
       const categoryInDatabase = await this.categoryService.findByName(searchForCategory);
       query.category = categoryInDatabase._id;
     }
-    if(searchForProduct){
+    if (searchForProduct) {
       const regex = new RegExp(searchForProduct);
-      query.name = {$regex: regex, $options: 'i'}
+      query.name = { $regex: regex, $options: 'i' };
     }
 
     return this.productModel.find(query)
@@ -65,5 +67,36 @@ export class ProductService {
     }
 
     return productInDatabase.remove();
+  }
+
+  async placeBid(req, _id, bidDto) {
+
+    const product: ProductInterface = await this.productModel.findById(_id).exec();
+
+    if (product.currentPrice > bidDto.amount) {
+      throw new BadRequestException({
+        number: '0000',
+        severity: 0,
+        message: 'BID_ERROR.no_less_than_actual',
+      });
+    }
+
+    const profile: ProfileInterface = await this.profileService.findProfile(req);
+
+    if(bidDto.amount > profile.wallet){
+      throw new BadRequestException({
+        number: '0000',
+        severity: 2,
+        message: 'BID_ERROR.not_enough_credit',
+      });
+    }
+
+
+    // TODO ha volt korábbi licit, azt feloldani
+
+    product.currentPrice = bidDto.amount;
+
+    return await product.save();
+
   }
 }

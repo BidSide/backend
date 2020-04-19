@@ -5,6 +5,8 @@ export interface UserInterface extends Document {
   roles: string[];
   password: string;
   passwordAgain: string;
+  firstName?: string;
+  lastName?: string;
 
   checkPassword(password, cb);
 }
