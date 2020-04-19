@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from './dto/product.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -12,8 +12,8 @@ export class ProductController {
   }
 
   @Get()
-  async getAllProduct() {
-    return await this.productService.getAllProduct();
+  async getAllProduct(@Query('category') searchForCategory?: string) {
+    return await this.productService.getAllProduct(searchForCategory);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

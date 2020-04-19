@@ -3,16 +3,27 @@ import { ProductDto } from './dto/product.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ProductInterface } from './interfaces/product.interface';
+import { CategoriesService } from '../categories/categories.service';
 
 @Injectable()
 export class ProductService {
 
   constructor(
     @InjectModel('Product') private readonly productModel: Model<ProductInterface>,
+    private readonly categoryService: CategoriesService
+
   ) {
   }
 
-  async getAllProduct() {
+  async getAllProduct(searchForCategory?:string) {
+
+    if(searchForCategory){
+      const categoryInDatabase = await this.categoryService.findByName(searchForCategory);
+      return this.productModel.find({
+        category: categoryInDatabase._id
+      }).populate('category');
+    }
+
     return this.productModel.find()
       .populate('category');
   }
