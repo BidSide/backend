@@ -190,12 +190,14 @@ export class ProductService {
         },
         {
           amount: product.currentPrice.amount,
+          reason: 'OUTBID_CREDITING'
         },
+
       );
 
     }
 
-    await this.profileService.lockdown(newProfile._id, bidDto.amount);
+    await this.profileService.lockdown(newProfile._id, bidDto.amount, 'BID_LOCKDOWN');
 
     const newBid = new this.bidModel({
       amount: bidDto.amount,
