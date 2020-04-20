@@ -62,7 +62,33 @@ export class ProfileService {
     return {
       firstName: req.user.firstName,
       lastName: req.user.lastName,
-      wallet: profile.wallet
-    }
+      wallet: profile.wallet,
+    };
+  }
+
+  async list(req: any) {
+
+    let profiles = await this.profileModel.find()
+      .populate({
+        path: 'user',
+        select: '-password -roles',
+      })
+      .select('-wallet');
+
+    profiles = profiles.filter(p => {
+      return p.user._id.toString() !== req.user._id.toString();
+    });
+
+    return profiles.map(p => {
+      return {
+        firstName: p.user.firstName ? p.user.firstName : 'Anonimus',
+        lastName: p.user.lastName ? p.user.lastName : 'Alpaka',
+        _id: p._id,
+      };
+    });
+  }
+
+  async findById(_id){
+    return this.profileModel.findById(_id);
   }
 }

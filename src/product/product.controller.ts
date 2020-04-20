@@ -15,9 +15,10 @@ export class ProductController {
   @Get()
   async getAllProduct(
     @Query('category') searchForCategory?: string,
-    @Query('search') searchForyProduct?: string
+    @Query('search') searchForyProduct?: string,
+    @Query('profile') profileId?: string,
   ) {
-    return await this.productService.getAllProduct(searchForCategory, searchForyProduct);
+    return await this.productService.getAllProduct(searchForCategory, searchForyProduct, profileId);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

@@ -13,11 +13,11 @@ export class ProductService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<ProductInterface>,
     private readonly categoryService: CategoriesService,
-    private readonly profileService: ProfileService
+    private readonly profileService: ProfileService,
   ) {
   }
 
-  async getAllProduct(searchForCategory?: string, searchForProduct?: string) {
+  async getAllProduct(searchForCategory?: string, searchForProduct?: string, profileId?: string) {
 
     const query: any = {};
 
@@ -25,9 +25,15 @@ export class ProductService {
       const categoryInDatabase = await this.categoryService.findByName(searchForCategory);
       query.category = categoryInDatabase._id;
     }
+
     if (searchForProduct) {
       const regex = new RegExp(searchForProduct);
       query.name = { $regex: regex, $options: 'i' };
+    }
+
+    if (profileId) {
+      const profile = await this.profileService.findById(profileId);
+      query.user = profile.user._id;
     }
 
     return this.productModel.find(query)
@@ -83,7 +89,7 @@ export class ProductService {
 
     const profile: ProfileInterface = await this.profileService.findProfile(req);
 
-    if(bidDto.amount > profile.wallet){
+    if (bidDto.amount > profile.wallet) {
       throw new BadRequestException({
         number: '0000',
         severity: 2,
