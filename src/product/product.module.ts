@@ -6,6 +6,7 @@ import { ProductSchema } from './schema/product.schema';
 import { AuthModule } from '../auth/auth.module';
 import { CategoriesModule } from '../categories/categories.module';
 import { ProfileModule } from '../profile/profile.module';
+import { BidSchema } from './schema/bid.schema';
 
 @Module({
   imports: [
@@ -15,6 +16,9 @@ import { ProfileModule } from '../profile/profile.module';
     MongooseModule.forFeature([
       {
         name: 'Product', schema: ProductSchema,
+      },
+      {
+        name: 'Bid', schema: BidSchema,
       },
     ]),
   ],

@@ -6,12 +6,14 @@ import { ProductInterface } from './interfaces/product.interface';
 import { CategoriesService } from '../categories/categories.service';
 import { ProfileService } from '../profile/profile.service';
 import { ProfileInterface } from '../profile/interfaces/profile.interface';
+import { BidInterface } from './interfaces/bid.interface';
 
 @Injectable()
 export class ProductService {
 
   constructor(
     @InjectModel('Product') private readonly productModel: Model<ProductInterface>,
+    @InjectModel('Bid') private readonly bidModel: Model<BidInterface>,
     private readonly categoryService: CategoriesService,
     private readonly profileService: ProfileService,
   ) {
@@ -36,8 +38,28 @@ export class ProductService {
       query.user = profile.user._id;
     }
 
-    return this.productModel.find(query)
-      .populate('category');
+    return await this.productModel.find(query)
+      .populate([
+        {
+          path: 'category',
+          select: '-_id -__v -parentCategory -childCategories',
+        },
+        {
+          path: 'profile',
+          select: '-roles -email -password -passwordAgain -__v',
+        },
+        {
+          path: 'currentPrice',
+          select: '-_id -updatedAt -__v',
+          populate: {
+            path: 'user',
+            select: 'firstName lastName',
+          },
+        },
+      ])
+      .select('-__v')
+      .exec();
+
   }
 
   async createProduct(req, productDto: ProductDto) {
@@ -48,14 +70,45 @@ export class ProductService {
   }
 
   async getProductById(_id: string) {
-    return this.productModel.findById(_id).populate('category');
+    return this.productModel.findById(_id)
+      .populate([
+        {
+          path: 'category',
+          select: '-_id -__v -parentCategory -childCategories',
+        },
+        {
+          path: 'profile',
+          select: '-roles -email -password -passwordAgain -__v',
+        },
+        {
+          path: 'currentPrice',
+          select: '-_id -updatedAt -__v',
+          populate: {
+            path: 'user',
+            select: 'firstName lastName',
+          },
+        },
+      ])
+      .select('-__v');
   }
 
   async updateProduct(req, _id: string, productDto: ProductDto) {
     const productInDatabase = await this.getProductById(_id);
 
-    if (productInDatabase.profile._id !== req.user._id) {
-      throw new BadRequestException();
+    if (productInDatabase.profile._id.toString() !== req.user._id.toString()) {
+      throw new BadRequestException({
+        number: '0000',
+        severity: 4,
+        message: 'PRODUCT_ERROR.not_yours',
+      });
+    }
+
+    if(productInDatabase.currentPrice){
+      throw new BadRequestException({
+        number: '0000',
+        severity: 1,
+        message: 'PRODUCT_ERROR.has_bid',
+      })
     }
 
     Object.assign(productInDatabase, productDto);
@@ -68,8 +121,20 @@ export class ProductService {
 
     const productInDatabase = await this.getProductById(_id);
 
-    if (productInDatabase.profile._id !== req.user._id) {
-      throw new BadRequestException();
+    if (productInDatabase.profile._id.toString() !== req.user._id.toString()) {
+      throw new BadRequestException({
+        number: '0000',
+        severity: 4,
+        message: 'PRODUCT_ERROR.not_yours',
+      });
+    }
+
+    if(productInDatabase.currentPrice){
+      throw new BadRequestException({
+        number: '0000',
+        severity: 1,
+        message: 'PRODUCT_ERROR.has_bid',
+      })
     }
 
     return productInDatabase.remove();
@@ -77,9 +142,24 @@ export class ProductService {
 
   async placeBid(req, _id, bidDto) {
 
-    const product: ProductInterface = await this.productModel.findById(_id).exec();
+    const product: ProductInterface = await this.productModel.findById(_id)
+      .populate({
+        path: 'currentPrice',
+        populate: {
+          path: 'user',
+        },
+      })
+      .exec();
 
-    if (product.currentPrice > bidDto.amount) {
+    if (product.profile._id.toString() === req.user._id.toString()) {
+      throw new BadRequestException({
+        number: '0000',
+        severity: 4,
+        message: 'PRODUCT_ERROR.its_yours',
+      });
+    }
+
+    if (!!product.currentPrice && product.currentPrice.amount > bidDto.amount) {
       throw new BadRequestException({
         number: '0000',
         severity: 0,
@@ -87,9 +167,9 @@ export class ProductService {
       });
     }
 
-    const profile: ProfileInterface = await this.profileService.findProfile(req);
+    const newProfile: ProfileInterface = await this.profileService.findProfile(req);
 
-    if (bidDto.amount > profile.wallet) {
+    if (bidDto.amount > newProfile.wallet) {
       throw new BadRequestException({
         number: '0000',
         severity: 2,
@@ -97,10 +177,34 @@ export class ProductService {
       });
     }
 
+    if (product.currentPrice) {
 
-    // TODO ha volt korábbi licit, azt feloldani
+      const oldProfile = await this.profileService.findProfile({ user: { _id: product.currentPrice.user._id } });
 
-    product.currentPrice = bidDto.amount;
+      await this.profileService.topup(
+        {
+          user:
+            {
+              _id: oldProfile.user._id,
+            },
+        },
+        {
+          amount: product.currentPrice.amount,
+        },
+      );
+
+    }
+
+    await this.profileService.lockdown(newProfile._id, bidDto.amount);
+
+    const newBid = new this.bidModel({
+      amount: bidDto.amount,
+      user: req.user._id,
+    });
+
+    await newBid.save();
+
+    product.currentPrice = newBid;
 
     return await product.save();
 
