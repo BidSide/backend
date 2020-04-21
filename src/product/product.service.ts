@@ -129,13 +129,26 @@ export class ProductService {
       });
     }
 
-    if(productInDatabase.currentPrice){
-      throw new BadRequestException({
-        number: '0000',
-        severity: 1,
-        message: 'PRODUCT_ERROR.has_bid',
-      })
+    if (productInDatabase.currentPrice) {
+
+      const oldProfile = await this.profileService.findProfile({ user: { _id: productInDatabase.currentPrice.user._id } });
+
+      await this.profileService.topup(
+        {
+          user:
+            {
+              _id: oldProfile.user._id,
+            },
+        },
+        {
+          amount: productInDatabase.currentPrice.amount,
+          reason: 'DELETE_PRODUCT_CREDITING'
+        },
+
+      );
+
     }
+
 
     return productInDatabase.remove();
   }

@@ -74,7 +74,7 @@ export class ProfileService {
     return {
       firstName: req.user.firstName,
       lastName: req.user.lastName,
-      wallet: profile.wallet,
+      profile,
       transactionLogs
     };
   }
