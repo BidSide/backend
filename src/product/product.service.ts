@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ProductDto } from './dto/product.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -231,6 +231,66 @@ export class ProductService {
     product.currentPrice = newBid;
 
     return await product.save();
+
+  }
+
+  async buyout(req, _id){
+    const product: ProductInterface = await this.productModel.findById(_id)
+      .populate({
+        path: 'currentPrice',
+        populate: {
+          path: 'user',
+        },
+      })
+      .exec();
+
+    console.log(product);
+
+    if (product.profile._id.toString() === req.user._id.toString()) {
+      throw new BadRequestException({
+        number: '0000',
+        severity: 4,
+        message: 'PRODUCT_ERROR.its_yours',
+      });
+    }
+
+    const newProfile: ProfileInterface = await this.profileService.findProfile(req);
+
+    if (product.buyoutPrice > newProfile.wallet) {
+      throw new BadRequestException({
+        number: '0000',
+        severity: 2,
+        message: 'BID_ERROR.not_enough_credit',
+      });
+    }
+
+    await this.profileService.topup(
+      {
+        user:
+          {
+            _id: product.profile._id,
+          },
+      },
+      {
+        amount: product.buyoutPrice,
+        reason: 'BUYOUT'
+      },
+    );
+
+    await this.profileService.lockdown(newProfile._id, product.buyoutPrice, 'BUYOUT_LOCKDOWN');
+
+    const newBid = new this.bidModel({
+      amount: product.buyoutPrice,
+      user: req.user._id,
+    });
+
+    await newBid.save();
+
+    product.currentPrice = newBid;
+    product.sold = true;
+
+    return await product.save();
+
 
   }
 }
