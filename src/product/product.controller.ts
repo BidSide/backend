@@ -54,4 +54,11 @@ export class ProductController {
     return await this.productService.placeBid(req, _id, bidDto);
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('USER')
+  @Post(":_id/buyout")
+  async buyout(@Req() req, @Param('_id') _id) {
+    return await this.productService.buyout(req, _id);
+  }
+
 }

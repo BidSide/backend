@@ -4,6 +4,7 @@ import { CategoryInterface } from '../../categories/interfaces/category.interfac
 import { BidInterface } from './bid.interface';
 
 export interface ProductInterface extends Document {
+  sold: boolean,
   name: string,
   description: string,
   buyoutPrice: number,

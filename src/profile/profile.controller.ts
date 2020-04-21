@@ -36,7 +36,8 @@ export class ProfileController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('USER')
   @Post('topup')
-  async topupWallet(@Req() req, @Body() topupDto: { amount: number }) {
+  async topupWallet(@Req() req, @Body() topupDto: { amount: number, reason?:string }) {
+    topupDto.reason = 'WALLET_TOPUP';
     return await this.profileService.topup(req, topupDto);
   }
 
