@@ -102,7 +102,7 @@ export class ProfileService {
   }
 
   async findById(_id) {
-    return this.profileModel.findById(_id);
+    return this.profileModel.findById(_id).populate('user');
   }
 
   private async LogTransaction(profileId, log: { amount: number; prefix: boolean; reason?: string }) {

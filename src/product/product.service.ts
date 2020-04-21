@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ProductDto } from './dto/product.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -35,7 +35,10 @@ export class ProductService {
 
     if (profileId) {
       const profile = await this.profileService.findById(profileId);
-      query.user = profile.user._id;
+
+      Logger.log(profile);
+
+      query.profile = profile.user._id;
     }
 
     return await this.productModel.find(query)
