@@ -7,6 +7,8 @@ import { CategoriesService } from '../categories/categories.service';
 import { ProfileService } from '../profile/profile.service';
 import { ProfileInterface } from '../profile/interfaces/profile.interface';
 import { BidInterface } from './interfaces/bid.interface';
+import { CronJob } from 'cron';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class ProductService {
@@ -16,8 +18,17 @@ export class ProductService {
     @InjectModel('Bid') private readonly bidModel: Model<BidInterface>,
     private readonly categoryService: CategoriesService,
     private readonly profileService: ProfileService,
+    private scheduler: SchedulerRegistry,
   ) {
   }
+
+  // @Cron('0 0 * * * *')
+  // handleCron() {
+  //   Logger.debug('Product check');
+  //
+  //   this.getAllProduct().then(p => Logger.log(p[0]));
+  //
+  // }
 
   async getAllProduct(searchForCategory?: string, searchForProduct?: string, profileId?: string) {
 
@@ -35,9 +46,6 @@ export class ProductService {
 
     if (profileId) {
       const profile = await this.profileService.findById(profileId);
-
-      Logger.log(profile);
-
       query.profile = profile.user._id;
     }
 
@@ -106,12 +114,12 @@ export class ProductService {
       });
     }
 
-    if(productInDatabase.currentPrice){
+    if (productInDatabase.currentPrice) {
       throw new BadRequestException({
         number: '0000',
         severity: 1,
         message: 'PRODUCT_ERROR.has_bid',
-      })
+      });
     }
 
     Object.assign(productInDatabase, productDto);
@@ -145,9 +153,8 @@ export class ProductService {
         },
         {
           amount: productInDatabase.currentPrice.amount,
-          reason: 'DELETE_PRODUCT_CREDITING'
+          reason: 'DELETE_PRODUCT_CREDITING',
         },
-
       );
 
     }
@@ -206,9 +213,8 @@ export class ProductService {
         },
         {
           amount: product.currentPrice.amount,
-          reason: 'OUTBID_CREDITING'
+          reason: 'OUTBID_CREDITING',
         },
-
       );
 
     }
