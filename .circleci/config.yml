@@ -18,10 +18,10 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            echo 'Lets deploy' |
-            ssh root@139.162.143.192 pwd |
-            ssh root@139.162.143.192 "ls -la" |
-            ssh root@139.162.143.192 "echo 'hello world'" |
+            echo 'Lets deploy' ||
+            ssh root@139.162.143.192 pwd ||
+            ssh root@139.162.143.192 "ls -la" ||
+            ssh root@139.162.143.192 "echo 'hello world'" ||
             echo "Done?"
 
 workflows:
