@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Start docker
           command: |
-            ssh root@139.162.143.192 "cd deploy && docker-compose down && docker-compose up -d"
+            ssh root@139.162.143.192 "cd deploy && docker-compose down && docker-compose up --build -d"
 
 workflows:
   build:
