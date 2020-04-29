@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ProductDto } from './dto/product.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -7,8 +7,7 @@ import { CategoriesService } from '../categories/categories.service';
 import { ProfileService } from '../profile/profile.service';
 import { ProfileInterface } from '../profile/interfaces/profile.interface';
 import { BidInterface } from './interfaces/bid.interface';
-import { CronJob } from 'cron';
-import { Cron, SchedulerRegistry } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class ProductService {
@@ -179,6 +178,14 @@ export class ProductService {
         number: '0000',
         severity: 4,
         message: 'PRODUCT_ERROR.its_yours',
+      });
+    }
+
+    if (product.starterPrice && product.starterPrice > bidDto.amount) {
+      throw new BadRequestException({
+        number: '0000',
+        severity: 0,
+        message: 'BID_ERROR.no_less_than_starter',
       });
     }
 
