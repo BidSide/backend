@@ -35,7 +35,7 @@ workflows:
       - build
       - deploy:
           requires:
-            - build # only deploy once build job has completed
+            - build
           filters:
             branches:
               only: master # only deploy on the master branch
