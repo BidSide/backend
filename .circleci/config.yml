@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Start pm2
           command: |
-            ssh root@139.162.143.192 "cd deploy && npm run start:pm2"
+            ssh root@139.162.143.192 "cd deploy && pm2 start"
 
 workflows:
   build:
