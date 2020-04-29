@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST "cat "hello world" > hw.txt"
+            ssh -t $SSH_USER@$SSH_HOST "cat 'hello world' > hw.txt && exit"
 
 workflows:
   build:
