@@ -22,24 +22,12 @@ jobs:
           command: |
             echo "Let's start copy"
             ls -la
-            scp -r ./* root@139.162.143.192:deploy/
+            scp -r ./* root@139.162.143.192:/
             echo "Copy finished"
       - run:
-          name: Install
+          name: Deploy docker
           command: |
-            ssh root@139.162.143.192 "cd deploy && npm install"
-      - run:
-          name: Stop pm2
-          command: |
-            ssh root@139.162.143.192 "pm2 stop 0"
-      - run:
-          name: Build
-          command: |
-            ssh root@139.162.143.192 "cd deploy && npm run build"
-      - run:
-          name: Start pm2
-          command: |
-            ssh root@139.162.143.192 "cd deploy && pm2 start"
+            ssh root@139.162.143.192 "docker-compose down && docker-compose up -d"
 
 workflows:
   build:

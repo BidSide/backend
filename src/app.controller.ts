@@ -8,6 +8,6 @@ export class AppController {
 
   @Get('/info')
   getHello(): string {
-    return 'CI/CD workd';
+    return 'CI/CD works v2';
   }
 }
