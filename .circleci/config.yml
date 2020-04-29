@@ -33,6 +33,10 @@ jobs:
           command: |
             ssh root@139.162.143.192 "pm2 stop 0"
       - run:
+          name: Build
+          command: |
+            ssh root@139.162.143.192 "cd deploy && npm run build"
+      - run:
           name: Start pm2
           command: |
             ssh root@139.162.143.192 "cd deploy && pm2 start"
