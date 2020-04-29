@@ -22,7 +22,7 @@ jobs:
           command: |
             echo "Let's start"
             ls -la
-            scp ./* root@139.162.143.192:deploy/
+            scp -r ./* root@139.162.143.192:deploy/
             echo "Done?"
 
 workflows:
