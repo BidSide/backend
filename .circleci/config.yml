@@ -20,10 +20,22 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            echo "Let's start"
+            echo "Let's start copy"
             ls -la
             scp -r ./* root@139.162.143.192:deploy/
-            echo "Done?"
+            echo "Copy finished"
+      - run:
+          name: Install
+          command: |
+            ssh root@139.162.143.192 "cd deploy && npm install"
+      - run:
+          name: Stop pm2
+          command: |
+            ssh root@139.162.143.192 "pm2 stop 0"
+      - run:
+          name: Start pm2
+          command: |
+            ssh root@139.162.143.192 "cd deploy && npm run start:pm2"
 
 workflows:
   build:
