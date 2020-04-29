@@ -1,24 +1,30 @@
-version: '3'
+version: '3.7'
 services: 
-  database:
-    image: 'mongo'
-    container_name: 'bidside-mongodb'
-    environment:
-      - MONGO_INITDB_DATABASE=bidside
-      - MONGO_INITDB_ROOT_USERNAME=ROOT
-      - MONGO_INITDB_ROOT_PASSWORD=ROOT
-    volumes:
-      - ./mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-#      - ./mongodb/mongo-volume:/data/db
-    ports:
-      - '27017-27019:27017-27019'
+#  database:
+#    image: 'mongo'
+#    container_name: 'bidside-mongodb'
+#    environment:
+#      - MONGO_INITDB_DATABASE=bidside
+#      - MONGO_INITDB_ROOT_USERNAME=ROOT
+#      - MONGO_INITDB_ROOT_PASSWORD=ROOT
+#    volumes:
+#      - ./mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+##      - ./mongodb/mongo-volume:/data/db
+#    ports:
+#      - '27017-27019:27017-27019'
 
   backend:
+    restart: always
     build:
       context: .
-    image: drendragon/bidside-app:latest
-    depends_on:
-      - database
+#    depends_on:
+#      - database
     container_name: 'bidside-backend'
+    command: "pm2-runtime ecosystem.config.js"
     ports:
       - '3000:3000'
+    environment:
+      - NODE_ENV=development
+      - jwtSecret=supersecret
+      - mongodbUser=rendszerf
+      - mongodbPswd=cBiuMYANMuMgv8H9

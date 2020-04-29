@@ -18,8 +18,8 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            echo 'Lets start'
-            scp LICENSE root@139.162.143.192/deploy/License
+            echo "Let's start"
+            scp . root@139.162.143.192/deploy/
             echo "Done?"
 
 workflows:
