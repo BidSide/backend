@@ -15,11 +15,12 @@ jobs:
     machine:
       enabled: true
     steps:
+      - checkout
       - run:
           name: Deploy Over SSH
           command: |
             echo "Let's start"
-            scp . root@139.162.143.192/deploy/
+            scp ./ root@139.162.143.192/deploy/
             echo "Done?"
 
 workflows:
