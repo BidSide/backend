@@ -7,7 +7,7 @@ export class AppController {
   }
 
   @Get('/info')
-  getHello(): string {
-    return 'CI/CD works v2';
+  getHello() {
+    return 0.1+0.2;
   }
 }
