@@ -31,13 +31,8 @@ jobs:
           name: Start docker
           command: |
             ssh root@139.162.143.192 "cd deploy && docker-compose down && docker-compose up --build -d"
-      - slack/notify:
-          color: '#28a745'
-          message: Build successfull
-      - slack/notify:
-          fail_only: true
-          color: '#dc3545'
-          failure_message: Deploy failed
+      - slack/status
+
 
 workflows:
   build:
