@@ -7,6 +7,7 @@ import { CategoriesService } from '../categories/categories.service';
 import { ProfileService } from '../profile/profile.service';
 import { ProfileInterface } from '../profile/interfaces/profile.interface';
 import { BidInterface } from './interfaces/bid.interface';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class ProductService {
@@ -16,6 +17,7 @@ export class ProductService {
     @InjectModel('Bid') private readonly bidModel: Model<BidInterface>,
     private readonly categoryService: CategoriesService,
     private readonly profileService: ProfileService,
+    private readonly notificationService: NotificationService,
   ) {
   }
 
@@ -73,6 +75,12 @@ export class ProductService {
   async createProduct(req, productDto: ProductDto) {
     const product = new this.productModel(productDto);
     const profile = await this.profileService.findProfile(req);
+
+    const mySubs = await this.profileService.getSubsOfProfile(profile._id);
+
+    mySubs.map(s => {
+      this.notificationService.newNotification(s._id, `${s.user.firstName} ${s.user.lastName} új terméket töltött fel [ ${product.name} ] néven.`);
+    });
 
     product.profile = profile._id;
 
@@ -247,6 +255,8 @@ export class ProductService {
         },
       );
 
+      await this.notificationService.newNotification(oldProfile._id, `Túllicitáltak a [ ${product.name} ] terméken.`);
+
     }
 
     await this.profileService.lockdown(newProfile._id, bidDto.amount, 'BID_LOCKDOWN');
@@ -311,6 +321,9 @@ export class ProductService {
     );
 
     await this.profileService.lockdown(newProfile._id, product.buyoutPrice, 'BUYOUT_LOCKDOWN');
+
+    await this.notificationService.newNotification(product.profile._id, `Elkelt a [ ${product.name} ] termék.`);
+    await this.notificationService.newNotification(newProfile._id, `Megvetted a [ ${product.name} ] terméket.`);
 
     const newBid = new this.bidModel({
       amount: product.buyoutPrice,

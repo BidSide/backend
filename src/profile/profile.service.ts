@@ -40,11 +40,14 @@ export class ProfileService {
       profile: req.profile._id,
     });
 
+    const mySubs = await this.getSubsOfProfile(req.profile._id);
+
     return {
       firstName: req.user.firstName,
       lastName: req.user.lastName,
       profile: req.profile,
       transactionLogs,
+      subscribers: mySubs.length,
     };
   }
 
@@ -162,5 +165,16 @@ export class ProfileService {
 
   async subscriptions(req: any) {
     return await this.productInterfaceService.getProductsOfProfiles(req.profile.subscriptions);
+  }
+
+  async getSubsOfProfile(_id: any) {
+    return this.profileModel.find({
+      subscriptions: _id,
+    })
+      .populate({
+        path: 'user',
+        select: 'firstName lastName'
+      })
+      .select('_id');
   }
 }

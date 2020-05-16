@@ -8,17 +8,19 @@ import { ProfileModule } from '../profile/profile.module';
 
 
 @Module({
-  imports:[
+  imports: [
     AuthModule,
     ProfileModule,
     MongooseModule.forFeature([
         {
           name: 'Notification', schema: NotificationSchema,
         },
-      ]
-    )
+      ],
+    ),
   ],
+  exports: [NotificationService],
   controllers: [NotificationController],
-  providers: [NotificationService]
+  providers: [NotificationService],
 })
-export class NotificationModule {}
+export class NotificationModule {
+}

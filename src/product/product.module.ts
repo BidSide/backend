@@ -8,6 +8,7 @@ import { CategoriesModule } from '../categories/categories.module';
 import { ProfileModule } from '../profile/profile.module';
 import { BidSchema } from './schema/bid.schema';
 import { ProductInterfaceService } from './productInterface.service';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProductInterfaceService } from './productInterface.service';
         name: 'Bid', schema: BidSchema,
       },
     ]),
+    NotificationModule,
   ],
 
   exports: [ProductService, ProductInterfaceService],
