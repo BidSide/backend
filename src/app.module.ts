@@ -10,6 +10,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductModule } from './product/product.module';
 import { ProfileModule } from './profile/profile.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CategoriesModule,
     ProductModule,
     ProfileModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

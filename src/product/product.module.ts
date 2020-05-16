@@ -7,7 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { CategoriesModule } from '../categories/categories.module';
 import { ProfileModule } from '../profile/profile.module';
 import { BidSchema } from './schema/bid.schema';
-import { ProductInterfaceService } from './schema/productInterface.service';
+import { ProductInterfaceService } from './productInterface.service';
 
 @Module({
   imports: [

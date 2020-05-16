@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ProfileInterface } from './interfaces/profile.interface';
 import { Model } from 'mongoose';
 import { WalletTransactionLogInterface } from './interfaces/walletTransactionLog.interface';
-import { ProductInterfaceService } from '../product/schema/productInterface.service';
+import { ProductInterfaceService } from '../product/productInterface.service';
 
 @Injectable()
 export class ProfileService {
