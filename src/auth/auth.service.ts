@@ -23,7 +23,7 @@ export class AuthService {
     }
 
     if (!userToAttempt) {
-      throw new NotFoundException('not found');
+      throw new ForbiddenException('Wrong Email or Password');
     }
 
     return new Promise((resolve, reject) => {
