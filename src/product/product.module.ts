@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { CategoriesModule } from '../categories/categories.module';
 import { ProfileModule } from '../profile/profile.module';
 import { BidSchema } from './schema/bid.schema';
+import { ProductInterfaceService } from './schema/productInterface.service';
 
 @Module({
   imports: [
@@ -22,8 +23,10 @@ import { BidSchema } from './schema/bid.schema';
       },
     ]),
   ],
+
+  exports: [ProductService, ProductInterfaceService],
   controllers: [ProductController],
-  providers: [ProductService],
+  providers: [ProductService, ProductInterfaceService],
 })
 export class ProductModule {
 }

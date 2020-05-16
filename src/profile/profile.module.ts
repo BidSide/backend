@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProfileSchema } from './schema/profile.schema';
 import { AuthModule } from '../auth/auth.module';
 import { WalletTransactionLogSchema } from './schema/walletTransactionLog.schema';
+import { ProductModule } from '../product/product.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { WalletTransactionLogSchema } from './schema/walletTransactionLog.schema
         },
       ],
     ),
+    forwardRef(() => ProductModule)
   ],
   controllers: [ProfileController],
   providers: [ProfileService],

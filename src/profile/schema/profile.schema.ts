@@ -6,4 +6,8 @@ export const ProfileSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  subscriptions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile'
+  }]
 });

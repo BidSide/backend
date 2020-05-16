@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ProfileInterface } from './interfaces/profile.interface';
 import { Model } from 'mongoose';
 import { WalletTransactionLogInterface } from './interfaces/walletTransactionLog.interface';
+import { ProductInterfaceService } from '../product/schema/productInterface.service';
 
 @Injectable()
 export class ProfileService {
@@ -10,6 +11,7 @@ export class ProfileService {
   constructor(
     @InjectModel('Profile') private readonly profileModel: Model<ProfileInterface>,
     @InjectModel('WalletTransactionLog') private readonly transactionLog: Model<WalletTransactionLogInterface>,
+    private readonly productInterfaceService: ProductInterfaceService,
   ) {
   }
 
@@ -138,5 +140,27 @@ export class ProfileService {
     console.log(_id);
 
     return this.findProfile({ user: { _id } });
+  }
+
+  async subscribe(req: any, id: any) {
+    const profile = await this.profileModel.findById(req.profile._id);
+    if (!profile.subscriptions.includes(id)) {
+      profile.subscriptions.push(id);
+    }
+    return await profile.save();
+  }
+
+  async unSubscribe(req: any, id: any) {
+    const profile = await this.profileModel.findById(req.profile._id);
+
+    profile.subscriptions = profile.subscriptions.filter(s => {
+      return s.toString() !== id.toString();
+    });
+
+    return await profile.save();
+  }
+
+  async subscriptions(req: any) {
+    return await this.productInterfaceService.getProductsOfProfiles(req.profile.subscriptions);
   }
 }
