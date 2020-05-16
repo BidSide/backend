@@ -17,7 +17,7 @@ jobs:
           channel: C013KJ43D4N
           color: '#42e2f4'
           message: Build successfull
-          webhook: https://hooks.slack.com/services/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
+          webhook: SLACK_WEBHOOK
   #  C013KJ43D4N
   deploy:
     machine:
@@ -39,7 +39,7 @@ jobs:
           channel: C013KJ43D4N
           color: '#42e2f4'
           message: Build successfull
-          webhook: https://hooks.slack.com/services/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
+          webhook: SLACK_WEBHOOK
 
 workflows:
   build:
