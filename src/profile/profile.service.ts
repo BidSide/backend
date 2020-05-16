@@ -17,7 +17,7 @@ export class ProfileService {
   async findProfile(req) {
 
     const profile = await this.profileModel.findOne({
-      user: req.user._id,
+      user: req.user,
     }).exec();
 
     if (!profile) {
@@ -32,9 +32,24 @@ export class ProfileService {
     return profile;
   }
 
-  async topup(req, topupDto: { amount: number, reason?: string }) {
+  async me(req: any) {
 
-    const profile = await this.findProfile(req);
+    const transactionLogs = await this.transactionLog.find({
+      profile: req.profile._id,
+    });
+
+    return {
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      profile: req.profile,
+      transactionLogs,
+    };
+  }
+
+  async topup(req, topupDto: { amount: number, reason?: string }) {
+    console.log(req.profile);
+
+    const profile = await this.profileModel.findById(req.profile._id);
 
     await this.LogTransaction(profile._id, { amount: topupDto.amount, prefix: true, reason: topupDto.reason });
 
@@ -64,20 +79,6 @@ export class ProfileService {
 
   }
 
-  async me(req: any) {
-    const profile = await this.findProfile(req);
-
-    const transactionLogs = await this.transactionLog.find({
-      profile: profile._id,
-    });
-
-    return {
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
-      profile,
-      transactionLogs
-    };
-  }
 
   async list(req: any) {
 
@@ -92,6 +93,8 @@ export class ProfileService {
       return p.user._id.toString() !== req.user._id.toString();
     });
 
+    console.log(profiles);
+
     return profiles.map(p => {
       return {
         firstName: p.user.firstName ? p.user.firstName : 'Anonimus',
@@ -102,7 +105,12 @@ export class ProfileService {
   }
 
   async findById(_id) {
-    return this.profileModel.findById(_id).populate('user');
+    return this.profileModel.findById(_id)
+      .populate({
+        path: 'user',
+        select: '-password -roles -passwordAgain',
+      })
+      .select('-wallet');
   }
 
   private async LogTransaction(profileId, log: { amount: number; prefix: boolean; reason?: string }) {
@@ -114,5 +122,21 @@ export class ProfileService {
 
     return await transactionLog.save();
 
+  }
+
+  async findPublicById(_id: any) {
+    return this.profileModel.findById(_id)
+      .populate({
+        path: 'user',
+        select: '-password -roles -passwordAgain',
+      })
+      .select('-wallet -email');
+  }
+
+  async findProfileByUserId(_id: any) {
+    console.log('GetProfileByIser_ID');
+    console.log(_id);
+
+    return this.findProfile({ user: { _id } });
   }
 }

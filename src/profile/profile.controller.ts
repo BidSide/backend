@@ -16,6 +16,7 @@ export class ProfileController {
   @Roles('USER')
   @Get()
   async getProfile(@Req() req) {
+    console.log('me');
     return await this.profileService.me(req);
   }
 
@@ -28,9 +29,9 @@ export class ProfileController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('USER')
-  @Get(':_id')
-  async getProfileById(@Req() req, @Param(':_id') _id) {
-    return await this.profileService.findById(_id);
+  @Get(':id')
+  async getProfileById(@Req() req, @Param('id') id) {
+    return await this.profileService.findById(id);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -40,5 +41,11 @@ export class ProfileController {
     topupDto.reason = 'WALLET_TOPUP';
     return await this.profileService.topup(req, topupDto);
   }
+
+  @Get('public/:_id')
+  async getPublicProfileById(@Req() req, @Param('_id') _id) {
+    return await this.profileService.findPublicById(_id);
+  }
+
 
 }

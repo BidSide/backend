@@ -2,9 +2,9 @@ import * as mongoose from 'mongoose';
 
 export const BidSchema = new mongoose.Schema({
   amount: Number,
-  user: {
+  profile: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Profile',
   },
 }, {
   timestamps: true,

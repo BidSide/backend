@@ -4,7 +4,7 @@ import {
   UseGuards,
   Request,
   Get,
-  Body,
+  Body, ForbiddenException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -16,7 +16,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-  ) {}
+  ) {
+  }
 
   @Post('signup')
   async createUserByEmailAndPassword(
@@ -28,7 +29,12 @@ export class AuthController {
 
   @Post('login')
   async login(@Request() req, @Body() user: UserDto) {
-    return this.authService.login(user);
+    try {
+      return await this.authService.login(user);
+    } catch (e) {
+      console.log(e);
+      throw new ForbiddenException(e);
+    }
   }
 
   @UseGuards(AuthGuard('jwt'))

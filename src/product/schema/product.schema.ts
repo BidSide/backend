@@ -15,7 +15,7 @@ export const ProductSchema = new mongoose.Schema({
   },
   profile: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Profile',
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,

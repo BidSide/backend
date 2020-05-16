@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductDto } from './dto/product.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -7,7 +7,6 @@ import { CategoriesService } from '../categories/categories.service';
 import { ProfileService } from '../profile/profile.service';
 import { ProfileInterface } from '../profile/interfaces/profile.interface';
 import { BidInterface } from './interfaces/bid.interface';
-import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class ProductService {
@@ -17,17 +16,8 @@ export class ProductService {
     @InjectModel('Bid') private readonly bidModel: Model<BidInterface>,
     private readonly categoryService: CategoriesService,
     private readonly profileService: ProfileService,
-    private scheduler: SchedulerRegistry,
   ) {
   }
-
-  // @Cron('0 0 * * * *')
-  // handleCron() {
-  //   Logger.debug('Product check');
-  //
-  //   this.getAllProduct().then(p => Logger.log(p[0]));
-  //
-  // }
 
   async getAllProduct(searchForCategory?: string, searchForProduct?: string, profileId?: string) {
 
@@ -45,7 +35,7 @@ export class ProductService {
 
     if (profileId) {
       const profile = await this.profileService.findById(profileId);
-      query.profile = profile.user._id;
+      query.profile = profile._id;
     }
 
     return await this.productModel.find(query)
@@ -56,14 +46,22 @@ export class ProductService {
         },
         {
           path: 'profile',
-          select: '-roles -email -password -passwordAgain -__v',
+          select: '-wallet',
+          populate: {
+            path: 'user',
+            select: '-roles -email -password -passwordAgain -__v',
+          },
         },
         {
           path: 'currentPrice',
           select: '-_id -updatedAt -__v',
           populate: {
-            path: 'user',
-            select: 'firstName lastName',
+            path: 'profile',
+            select: '-wallet',
+            populate: {
+              path: 'user',
+              select: 'firstName lastName',
+            },
           },
         },
       ])
@@ -74,13 +72,15 @@ export class ProductService {
 
   async createProduct(req, productDto: ProductDto) {
     const product = new this.productModel(productDto);
-    product.profile = req.user;
+    const profile = await this.profileService.findProfile(req);
+
+    product.profile = profile._id;
 
     return await product.save();
   }
 
   async getProductById(_id: string) {
-    return this.productModel.findById(_id)
+    const product = await this.productModel.findById(_id)
       .populate([
         {
           path: 'category',
@@ -88,24 +88,38 @@ export class ProductService {
         },
         {
           path: 'profile',
-          select: '-roles -email -password -passwordAgain -__v',
+          select: '-wallet',
+          populate: {
+            path: 'user',
+            select: '-roles -email -password -passwordAgain -__v',
+          },
         },
         {
           path: 'currentPrice',
           select: '-_id -updatedAt -__v',
           populate: {
-            path: 'user',
-            select: 'firstName lastName',
+            path: 'profile',
+            select: '-wallet',
+            populate: {
+              path: 'user',
+              select: 'firstName lastName',
+            },
           },
         },
       ])
       .select('-__v');
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return product;
   }
 
   async updateProduct(req, _id: string, productDto: ProductDto) {
     const productInDatabase = await this.getProductById(_id);
 
-    if (productInDatabase.profile._id.toString() !== req.user._id.toString()) {
+    if (productInDatabase.profile._id.toString() !== req.profile._id.toString()) {
       throw new BadRequestException({
         number: '0000',
         severity: 4,
@@ -130,8 +144,9 @@ export class ProductService {
   async deleteProduct(req, _id: string) {
 
     const productInDatabase = await this.getProductById(_id);
+    const profile = await this.profileService.findProfile(req);
 
-    if (productInDatabase.profile._id.toString() !== req.user._id.toString()) {
+    if (productInDatabase.profile._id.toString() !== profile._id.toString()) {
       throw new BadRequestException({
         number: '0000',
         severity: 4,
@@ -141,13 +156,13 @@ export class ProductService {
 
     if (productInDatabase.currentPrice) {
 
-      const oldProfile = await this.profileService.findProfile({ user: { _id: productInDatabase.currentPrice.user._id } });
+      const oldProfile = await this.profileService.findProfile({ user: { _id: productInDatabase.currentPrice.profile._id } });
 
       await this.profileService.topup(
         {
-          user:
+          profile:
             {
-              _id: oldProfile.user._id,
+              _id: oldProfile._id,
             },
         },
         {
@@ -158,8 +173,11 @@ export class ProductService {
 
     }
 
+    await this.productModel.deleteOne({
+      _id: productInDatabase._id,
+    });
 
-    return productInDatabase.remove();
+    return { deleted: true };
   }
 
   async placeBid(req, _id, bidDto) {
@@ -168,7 +186,12 @@ export class ProductService {
       .populate({
         path: 'currentPrice',
         populate: {
-          path: 'user',
+          path: 'profile',
+          select: '-wallet',
+          populate: {
+            path: 'user',
+            select: '-roles -email -password -passwordAgain -__v',
+          },
         },
       })
       .exec();
@@ -209,13 +232,13 @@ export class ProductService {
 
     if (product.currentPrice) {
 
-      const oldProfile = await this.profileService.findProfile({ user: { _id: product.currentPrice.user._id } });
+      const oldProfile = await this.profileService.findProfile({ user: { _id: product.currentPrice.profile._id } });
 
       await this.profileService.topup(
         {
-          user:
+          profile:
             {
-              _id: oldProfile.user._id,
+              _id: oldProfile._id,
             },
         },
         {
@@ -230,7 +253,7 @@ export class ProductService {
 
     const newBid = new this.bidModel({
       amount: bidDto.amount,
-      user: req.user._id,
+      profile: req.profile._id,
     });
 
     await newBid.save();
@@ -241,12 +264,15 @@ export class ProductService {
 
   }
 
-  async buyout(req, _id){
+  async buyout(req, _id) {
     const product: ProductInterface = await this.productModel.findById(_id)
       .populate({
         path: 'currentPrice',
         populate: {
-          path: 'user',
+          path: 'profile',
+          populate: {
+            path: 'user',
+          },
         },
       })
       .exec();
@@ -273,14 +299,14 @@ export class ProductService {
 
     await this.profileService.topup(
       {
-        user:
+        profile:
           {
             _id: product.profile._id,
           },
       },
       {
         amount: product.buyoutPrice,
-        reason: 'BUYOUT'
+        reason: 'BUYOUT',
       },
     );
 
@@ -288,7 +314,7 @@ export class ProductService {
 
     const newBid = new this.bidModel({
       amount: product.buyoutPrice,
-      user: req.user._id,
+      profile: req.user._id,
     });
 
     await newBid.save();
